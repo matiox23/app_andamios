@@ -1,3 +1,4 @@
+import 'package:app_andamios/presentation/widgets/home.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -10,6 +11,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -51,6 +53,7 @@ class _LoginFormState extends State<LoginForm> {
               child: Column(
                 children: [
                   TextFormField(
+                    cursorColor: Colors.black,
                     decoration: const InputDecoration(
                         errorBorder: OutlineInputBorder(
                             borderSide:
@@ -139,24 +142,36 @@ class _LoginFormState extends State<LoginForm> {
                   const Gap(30),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        backgroundColor: const Color.fromARGB(187, 255, 0, 0),
-                        overlayColor: const Color.fromARGB(255, 55, 54, 54),
-                      ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          /// do something
-                        }
-                      },
-                      child: const Text(
-                        "Ingesar",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  )
+                    child: _isLoading
+                        ? const Center(
+                            child:
+                                CircularProgressIndicator(), // Indicador de carga
+                          )
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
+                              backgroundColor:
+                                  const Color.fromARGB(187, 255, 0, 0),
+                              overlayColor:
+                                  const Color.fromARGB(255, 55, 54, 54),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _handleLogin();
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => const Home()),
+                                // );
+                              }
+                            },
+                            child: const Text(
+                              "Ingesar",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                  ),
                 ],
               ),
             ),
@@ -164,5 +179,34 @@ class _LoginFormState extends State<LoginForm> {
         ],
       ),
     );
+  }
+
+  void _handleLogin() {
+    setState(() {
+      _isLoading = true; // Activa el estado de carga
+    });
+
+    // Simula un retraso para representar una acción como una llamada a la API
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false; // Finaliza el estado de carga
+      });
+
+      // Muestra el SnackBar con el mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Inicio de sesión exitoso')),
+      );
+
+      // Espera 1 segundo para que el SnackBar sea visible antes de navegar
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          // Verifica que el widget aún está montado
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        }
+      });
+    });
   }
 }
